@@ -6,215 +6,481 @@
 <meta name="robots" content="noindex, nofollow">
 <title>レビュー会アーカイブ</title>
 <style>
-  /* ============================================================
-     設定：ここにGASのウェブアプリURLを貼り付けてください
-     ============================================================ */
-  /* （URLはHTML下部の <script> 内 GAS_URL に記入します） */
-
   :root{
-    --ink:#1b1a17;
-    --paper:#f3efe7;
-    --line:#d8d1c2;
-    --accent:#c8410f;     /* 朱：版下の校正色から */
-    --accent-soft:#f6e3d8;
-    --sub:#8a8475;
-    --chip:#e9e2d4;
-    --ok:#2f7d54;
-    --shadow:0 1px 0 rgba(27,26,23,.04);
+    --bg:#f2f2f2;
+    --surface:#ffffff;
+    --header-bg:#111111;
+    --header-text:#ffffff;
+    --ink:#1a1a1a;
+    --sub:#888888;
+    --line:#e0e0e0;
+    --accent:#e84f2a;
+    --accent-pale:#fdf0ec;
+    --chip-bg:#efefef;
+    --ok:#2a8a55;
+    --radius:6px;
+    --card-shadow:0 2px 8px rgba(0,0,0,.07);
+    --card-shadow-hover:0 8px 28px rgba(0,0,0,.13);
   }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px}
   body{
-    background:var(--paper);
+    background:var(--bg);
     color:var(--ink);
-    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+    font-family:"Helvetica Neue","Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",Arial,sans-serif;
     -webkit-font-smoothing:antialiased;
     line-height:1.6;
   }
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 
-  /* ---- ヘッダー ---- */
-  header.masthead{
-    border-bottom:2px solid var(--ink);
-    padding:40px 0 22px;
-    margin-bottom:0;
+  /* ---- Header ---- */
+  header{
+    background:var(--header-bg);
+    padding:0;
+    position:sticky;top:0;z-index:100;
   }
-  .masthead .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
-  .brand{display:flex;flex-direction:column;gap:6px}
-  .eyebrow{
-    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
-    color:var(--accent);font-weight:700;
+  .header-inner{
+    max-width:1200px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 28px;height:60px;
+    gap:20px;
   }
-  h1{
-    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
-    font-size:34px;font-weight:600;margin:0;letter-spacing:.04em;
+  .site-title{
+    color:#fff;font-size:15px;font-weight:700;
+    letter-spacing:.06em;white-space:nowrap;
+    text-decoration:none;
+    display:flex;align-items:center;gap:10px;
   }
-  .count{
-    font-family:"Hiragino Mincho ProN",serif;
-    text-align:right;line-height:1.1;
+  .site-title .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent);flex:none;
   }
-  .count b{display:block;font-size:40px;color:var(--accent)}
-  .count span{font-size:11px;letter-spacing:.2em;color:var(--sub)}
+  .header-meta{
+    color:rgba(255,255,255,.45);
+    font-size:12px;letter-spacing:.08em;
+    white-space:nowrap;
+  }
+  .header-count{
+    color:#fff;font-size:26px;font-weight:700;
+    line-height:1;letter-spacing:-.02em;
+  }
+  .header-count small{
+    font-size:11px;color:rgba(255,255,255,.45);
+    font-weight:400;letter-spacing:.1em;margin-left:4px;
+  }
 
-  /* ---- 投稿フォーム ---- */
+  /* ---- wrap ---- */
+  .wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+
+  /* ---- Add form ---- */
   .composer{
+    background:var(--surface);
     border-bottom:1px solid var(--line);
-    padding:22px 0 26px;
+    padding:24px 0;
   }
-  .composer-head{
-    display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  .composer-inner{max-width:1200px;margin:0 auto;padding:0 28px}
+  .composer-title{
+    font-size:12px;letter-spacing:.14em;font-weight:700;
+    color:var(--sub);text-transform:uppercase;margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
   }
-  .composer-head .no{
-    font-family:"Hiragino Mincho ProN",serif;color:var(--accent);
-    font-size:13px;font-weight:700;letter-spacing:.1em;
+  .composer-title::before{
+    content:'';display:block;width:3px;height:14px;
+    background:var(--accent);border-radius:2px;
   }
-  .composer-head h2{font-size:15px;margin:0;font-weight:700;letter-spacing:.04em}
-  .grid{
+  .form-row{
     display:grid;
     grid-template-columns:160px 1fr 1fr;
     gap:12px;
   }
   .field label{
-    display:block;font-size:11px;letter-spacing:.12em;color:var(--sub);
-    margin-bottom:5px;font-weight:700;
+    display:block;font-size:11px;letter-spacing:.1em;
+    color:var(--sub);margin-bottom:5px;font-weight:700;
+    text-transform:uppercase;
   }
-  .field input[type=text],.field input[type=url],.field select{
-    width:100%;padding:10px 12px;border:1px solid var(--line);
-    background:#fffdf8;border-radius:2px;font-size:14px;color:var(--ink);
-    font-family:inherit;transition:border-color .15s;
+  .field input[type=text],
+  .field input[type=url],
+  .field select{
+    width:100%;padding:9px 12px;
+    border:1px solid var(--line);border-radius:var(--radius);
+    background:#fafafa;font-size:14px;color:var(--ink);
+    font-family:inherit;transition:border-color .15s,box-shadow .15s;
+    appearance:none;-webkit-appearance:none;
   }
   .field select{
-    appearance:none;-webkit-appearance:none;cursor:pointer;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8475' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;
+    padding-right:34px;cursor:pointer;
   }
-  .field input:focus,.field select:focus{outline:none;border-color:var(--accent)}
-  .row2{display:flex;align-items:flex-end;gap:14px;margin-top:12px;flex-wrap:wrap}
+  .field input:focus,.field select:focus{
+    outline:none;border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(232,79,42,.1);
+    background:#fff;
+  }
+  .form-row2{
+    display:flex;align-items:flex-end;gap:12px;
+    margin-top:12px;flex-wrap:wrap;
+  }
   .thumb-field{flex:1;min-width:220px}
   .filebtn{
     display:inline-flex;align-items:center;gap:8px;
-    padding:9px 14px;border:1px dashed var(--line);border-radius:2px;
-    background:#fffdf8;cursor:pointer;font-size:13px;color:var(--sub);
+    padding:8px 14px;border:1px dashed var(--line);
+    border-radius:var(--radius);background:#fafafa;
+    cursor:pointer;font-size:13px;color:var(--sub);
     transition:.15s;
   }
   .filebtn:hover{border-color:var(--accent);color:var(--accent)}
   .filebtn input{display:none}
   .filehint{font-size:11px;color:var(--sub);margin-top:5px}
   .submit{
-    padding:11px 28px;background:var(--ink);color:var(--paper);
-    border:none;border-radius:2px;font-size:14px;font-weight:700;
-    letter-spacing:.08em;cursor:pointer;font-family:inherit;transition:.15s;
+    padding:10px 26px;background:var(--accent);color:#fff;
+    border:none;border-radius:var(--radius);
+    font-size:13px;font-weight:700;letter-spacing:.06em;
+    cursor:pointer;font-family:inherit;transition:.15s;
+    white-space:nowrap;
   }
-  .submit:hover{background:var(--accent)}
-  .submit:disabled{opacity:.5;cursor:not-allowed}
+  .submit:hover{background:#c83e1f}
+  .submit:disabled{opacity:.45;cursor:not-allowed}
   .msg{font-size:13px;margin-top:10px;min-height:18px}
   .msg.ok{color:var(--ok)}
   .msg.err{color:var(--accent)}
 
-  /* ---- テーブル ---- */
+  /* ---- View toggle ---- */
+  .view-toggle{
+    flex:none;display:flex;
+    border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;background:var(--surface);
+  }
+  .view-toggle button{
+    display:flex;align-items:center;justify-content:center;
+    width:38px;height:38px;border:none;background:none;
+    cursor:pointer;color:var(--sub);transition:.15s;
+    border-radius:0;
+  }
+  .view-toggle button:first-child{border-right:1px solid var(--line)}
+  .view-toggle button:hover{color:var(--ink);background:var(--bg)}
+  .view-toggle button.active{
+    background:var(--ink);color:#fff;
+  }
+
+  /* ---- Toolbar ---- */
   .toolbar{
-    display:flex;align-items:center;gap:14px;
-    padding:18px 0 12px;flex-wrap:wrap;
+    display:flex;align-items:center;gap:12px;
+    padding:20px 0 16px;flex-wrap:wrap;
   }
-  .search{
-    flex:1;min-width:200px;display:flex;align-items:center;gap:8px;
-    border:1px solid var(--line);border-radius:2px;padding:8px 12px;background:#fffdf8;
+  .search-wrap{
+    flex:1;min-width:200px;
+    display:flex;align-items:center;gap:8px;
+    background:var(--surface);
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:8px 14px;transition:border-color .15s,box-shadow .15s;
   }
-  .search input{border:none;outline:none;background:none;font-size:14px;width:100%;font-family:inherit;color:var(--ink)}
-  .search svg{flex:none;opacity:.5}
+  .search-wrap:focus-within{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(232,79,42,.1);
+  }
+  .search-wrap svg{flex:none;opacity:.4}
+  .search-wrap input{
+    border:none;outline:none;background:none;
+    font-size:14px;width:100%;font-family:inherit;color:var(--ink);
+  }
   .sortbtn{
     flex:none;display:inline-flex;align-items:center;gap:7px;
-    border:1px solid var(--line);border-radius:2px;padding:9px 14px;background:#fffdf8;
-    font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;font-family:inherit;
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:9px 14px;background:var(--surface);
+    font-size:13px;font-weight:700;color:var(--ink);
+    cursor:pointer;font-family:inherit;
     letter-spacing:.04em;transition:.15s;white-space:nowrap;
   }
   .sortbtn:hover{border-color:var(--accent);color:var(--accent)}
-  .sortbtn svg{opacity:.6;transition:transform .2s}
+  .sortbtn svg{opacity:.5;transition:transform .25s}
 
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  thead th{
-    text-align:left;font-size:11px;letter-spacing:.14em;color:var(--sub);
-    font-weight:700;padding:10px 12px;border-bottom:2px solid var(--ink);
-    text-transform:uppercase;
+  /* ---- Grid ---- */
+  .grid-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:24px;
   }
-  tbody td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
-  tbody tr:hover{background:rgba(200,65,15,.035)}
-  .c-order{font-family:"Hiragino Mincho ProN",serif;color:var(--accent);font-weight:700;white-space:nowrap;width:64px}
-  .c-date{color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums;width:120px}
-  .c-thumb{width:72px}
-  .thumb{
-    width:56px;height:42px;object-fit:cover;border:1px solid var(--line);
-    border-radius:2px;background:#fff;display:block;
+  .grid-header-label{
+    font-size:11px;letter-spacing:.14em;
+    color:var(--sub);font-weight:700;text-transform:uppercase;
   }
-  .thumb-icon{
-    width:56px;height:42px;border:1px solid var(--line);border-radius:2px;
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    padding-bottom:60px;
+  }
+
+  /* ---- Card ---- */
+  .card{
+    background:var(--surface);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:var(--card-shadow);
+    transition:transform .22s ease,box-shadow .22s ease;
+    display:flex;flex-direction:column;
+  }
+  .card:hover{
+    transform:translateY(-4px);
+    box-shadow:var(--card-shadow-hover);
+  }
+  .card-thumb{
+    width:100%;aspect-ratio:16/10;
+    background:#e8e8e8;
+    overflow:hidden;position:relative;
+  }
+  .card-thumb img{
+    width:100%;height:100%;object-fit:cover;
+    display:block;
+    transition:transform .3s ease;
+  }
+  .card:hover .card-thumb img{transform:scale(1.04)}
+  .card-thumb-icon{
+    width:100%;height:100%;
     display:flex;align-items:center;justify-content:center;
-    font-size:10px;font-weight:800;letter-spacing:.04em;color:#fff;
+    font-size:13px;font-weight:800;letter-spacing:.06em;color:#fff;
+  }
+  .card-order{
+    position:absolute;top:10px;left:10px;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+    color:#fff;font-size:11px;font-weight:700;
+    padding:3px 8px;border-radius:3px;letter-spacing:.06em;
+  }
+  .card-body{
+    padding:14px 16px 16px;
+    flex:1;display:flex;flex-direction:column;gap:8px;
+  }
+  .card-title{
+    font-size:14px;font-weight:700;
+    color:var(--ink);line-height:1.45;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .card-meta{
+    display:flex;align-items:center;gap:8px;
+    flex-wrap:wrap;margin-top:auto;
   }
   .chip{
-    display:inline-block;padding:3px 10px;background:var(--chip);
-    border-radius:2px;font-size:13px;white-space:nowrap;
+    display:inline-block;
+    padding:3px 10px;
+    background:var(--chip-bg);
+    border-radius:3px;
+    font-size:11px;font-weight:700;
+    color:var(--ink);white-space:nowrap;
+    letter-spacing:.04em;
   }
-  .c-title{font-weight:600}
-  .c-url a{
-    color:var(--accent);text-decoration:none;font-size:13px;
-    border-bottom:1px solid transparent;transition:.15s;
+  .card-date{
+    font-size:11px;color:var(--sub);
+    letter-spacing:.04em;margin-left:auto;
   }
-  .c-url a:hover{border-bottom-color:var(--accent)}
+  .card-url{
+    font-size:12px;
+  }
+  .card-url a{
+    color:var(--sub);text-decoration:none;
+    display:inline-flex;align-items:center;gap:4px;
+    transition:color .15s;
+  }
+  .card-url a:hover{color:var(--accent)}
+  .card-url a svg{opacity:.6}
 
-  .state{text-align:center;padding:60px 0;color:var(--sub);font-size:14px}
+  /* ---- サムネ編集ボタン(カード/リスト共通) ---- */
+  .thumb-edit{
+    position:absolute;border:none;cursor:pointer;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.92);color:#555;
+    box-shadow:0 1px 4px rgba(0,0,0,.2);
+    opacity:0;transition:opacity .15s,color .15s,background .15s;
+  }
+  .thumb-edit:hover{background:#fff;color:var(--accent)}
+  .thumb-edit-card{
+    top:10px;right:10px;width:28px;height:28px;border-radius:50%;
+  }
+  .card:hover .thumb-edit-card{opacity:1}
+  .lv-thumb-wrap{position:relative;width:58px}
+  .thumb-edit-list{
+    right:-7px;bottom:-7px;width:20px;height:20px;border-radius:50%;
+    border:1px solid var(--line);
+  }
+  .lv-thumb-wrap:hover .thumb-edit-list,
+  .list-view tbody tr:hover .thumb-edit-list{opacity:1}
+  /* 処理中(ローディング)表示 */
+  .thumb-busy{position:relative}
+  .thumb-busy::after{
+    content:"";position:absolute;inset:0;
+    background:rgba(255,255,255,.65) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23e84f2a' stroke-width='2'%3E%3Cpath d='M21 12a9 9 0 1 1-6.2-8.5'/%3E%3C/svg%3E") no-repeat center;
+    animation:spin .7s linear infinite;z-index:2;
+  }
+
+  /* ---- List view ---- */
+  .list-view{
+    width:100%;border-collapse:collapse;
+    padding-bottom:60px;display:table;
+  }
+  .list-view thead th{
+    text-align:left;font-size:11px;letter-spacing:.12em;
+    color:var(--sub);font-weight:700;text-transform:uppercase;
+    padding:10px 14px;border-bottom:2px solid var(--ink);
+    white-space:nowrap;
+  }
+  .list-view tbody tr{
+    background:var(--surface);
+    border-bottom:1px solid var(--line);
+    transition:background .12s;
+  }
+  .list-view tbody tr:hover{background:var(--accent-pale)}
+  .list-view tbody td{padding:10px 14px;vertical-align:middle}
+  .lv-order{
+    font-size:12px;font-weight:700;color:var(--sub);
+    white-space:nowrap;width:60px;
+  }
+  .lv-thumb{width:74px}
+  .lv-thumb-img{
+    width:58px;height:40px;object-fit:cover;
+    border-radius:3px;border:1px solid var(--line);
+    display:block;background:#e8e8e8;
+  }
+  .lv-thumb-icon{
+    width:58px;height:40px;border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:800;color:#fff;letter-spacing:.04em;
+  }
+  .lv-title{font-size:14px;font-weight:600;color:var(--ink)}
+  .lv-author{white-space:nowrap}
+  .lv-date{
+    font-size:12px;color:var(--sub);
+    white-space:nowrap;font-variant-numeric:tabular-nums;
+  }
+  .lv-url a{
+    font-size:12px;color:var(--sub);text-decoration:none;
+    display:inline-flex;align-items:center;gap:4px;
+    white-space:nowrap;transition:color .15s;
+  }
+  .lv-url a:hover{color:var(--accent)}
+
+  /* ---- State ---- */
+  .state{
+    text-align:center;padding:80px 0;
+    color:var(--sub);font-size:14px;
+    grid-column:1/-1;
+  }
   .spinner{
-    width:22px;height:22px;border:2px solid var(--line);border-top-color:var(--accent);
-    border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px;
+    width:28px;height:28px;
+    border:2px solid var(--line);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    margin:0 auto 16px;
   }
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  footer{padding:40px 0 60px;color:var(--sub);font-size:12px;text-align:center}
-
-  /* レスポンシブ */
-  @media(max-width:720px){
-    .grid{grid-template-columns:1fr}
-    h1{font-size:26px}
-    .count b{font-size:30px}
-    thead{display:none}
-    tbody tr{display:grid;grid-template-columns:56px 1fr;gap:4px 12px;padding:14px 0;border-bottom:1px solid var(--line)}
-    tbody td{border:none;padding:2px 0}
-    .c-thumb{grid-row:span 4}
-    .c-date::before{content:"日付：";color:var(--sub)}
-    .c-author::before{content:"発信者：";color:var(--sub)}
+  footer{
+    padding:40px 0;
+    color:var(--sub);font-size:12px;
+    text-align:center;letter-spacing:.06em;
+    border-top:1px solid var(--line);
+    background:var(--surface);
   }
-  @media(prefers-reduced-motion:reduce){.spinner{animation:none}}
+
+  /* ---- Responsive ---- */
+  @media(max-width:960px){
+    .form-row{grid-template-columns:1fr 1fr}
+    .form-row .field:first-child{grid-column:1/-1}
+  }
+  @media(max-width:700px){
+    .header-inner{padding:0 16px}
+    .wrap{padding:0 16px}
+    .composer-inner{padding:0 16px}
+    .card-grid{grid-template-columns:repeat(2,1fr);gap:14px}
+    .form-row{grid-template-columns:1fr}
+    .header-count{font-size:20px}
+
+    /* ---- モバイル リストビュー ---- */
+    .list-view{border-collapse:separate;border-spacing:0 8px}
+    .list-view thead{display:none}
+    .list-view tbody tr{
+      display:grid;
+      /* col1:サムネ  col2:テキスト  col3:日付(auto) */
+      grid-template-columns:76px 1fr auto;
+      grid-template-rows:auto auto auto auto;
+      column-gap:12px;
+      row-gap:3px;
+      padding:12px;
+      background:var(--surface);
+      border-radius:var(--radius);
+      box-shadow:var(--card-shadow);
+    }
+    .list-view tbody td{padding:0;border:none}
+
+    /* サムネ：左列・全行にまたがる */
+    .lv-thumb{
+      grid-column:1;grid-row:1/span 4;
+      align-self:start;
+    }
+    .lv-thumb-img,.lv-thumb-icon{
+      width:76px;height:57px;border-radius:4px;
+    }
+
+    /* 回数：右上エリア col2〜3 */
+    .lv-order{
+      grid-column:2;grid-row:1;
+      font-size:11px;color:var(--sub);font-weight:700;letter-spacing:.06em;
+    }
+
+    /* タイトル：2行目 col2〜3 */
+    .lv-title{
+      grid-column:2/span 2;grid-row:2;
+      font-size:13px;font-weight:700;line-height:1.45;
+    }
+
+    /* 発信者：3行目 col2 */
+    .lv-author{grid-column:2;grid-row:3;align-self:center}
+
+    /* 日付：3行目 col3（発信者の右） */
+    .lv-date{
+      grid-column:3;grid-row:3;
+      font-size:11px;color:var(--sub);
+      white-space:nowrap;align-self:center;
+    }
+
+    /* URL：4行目 col2〜3 */
+    .lv-url{grid-column:2/span 2;grid-row:4;margin-top:2px}
+  }
+  @media(max-width:440px){
+    .card-grid{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .spinner{animation:none}
+    .card,.card-thumb img{transition:none}
+  }
 </style>
 </head>
 <body>
 
-<header class="masthead">
-  <div class="wrap">
-    <div class="brand">
-      <span class="eyebrow">Review Meeting Archive</span>
-      <h1>レビュー会アーカイブ</h1>
-    </div>
-    <div class="count">
-      <b id="totalCount">—</b>
-      <span>ENTRIES</span>
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <a class="site-title" href="#">
+      <span class="dot"></span>
+      レビュー会アーカイブ
+    </a>
+    <div class="header-meta">REVIEW MEETING ARCHIVE</div>
+    <div class="header-count">
+      <span id="totalCount">—</span><small>ENTRIES</small>
     </div>
   </div>
 </header>
 
-<div class="wrap">
-
-  <!-- 投稿フォーム -->
-  <section class="composer">
-    <div class="composer-head">
-      <span class="no">＋</span>
-      <h2>資料を追加する</h2>
-    </div>
-    <div class="grid">
+<!-- Add Form -->
+<div class="composer">
+  <div class="composer-inner">
+    <div class="composer-title">資料を追加する</div>
+    <div class="form-row">
       <div class="field">
-        <label>発信者（担当者名）</label>
+        <label>発信者</label>
         <select id="f-author-select">
           <option value="">選択してください</option>
-          <!-- 登録済みの発信者を自動で追加 -->
           <option value="__other__">＋ その他（直接入力）</option>
         </select>
         <input type="text" id="f-author-other" placeholder="新しい発信者名を入力" maxlength="20" style="display:none;margin-top:8px">
@@ -228,11 +494,11 @@
         <input type="url" id="f-url" placeholder="https://...">
       </div>
     </div>
-    <div class="row2">
+    <div class="form-row2">
       <div class="thumb-field">
-        <label style="display:block;font-size:11px;letter-spacing:.12em;color:var(--sub);margin-bottom:5px;font-weight:700">サムネ画像（任意）</label>
+        <label style="display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin-bottom:5px;font-weight:700">サムネ画像（任意）</label>
         <label class="filebtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           <span id="fileLabel">画像を選択</span>
           <input type="file" id="f-thumb" accept="image/*">
         </label>
@@ -241,60 +507,59 @@
       <button class="submit" id="submitBtn">追加する</button>
     </div>
     <div class="msg" id="formMsg"></div>
-  </section>
-
-  <!-- 検索 -->
-  <div class="toolbar">
-    <div class="search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="searchBox" placeholder="タイトル・担当者で絞り込み">
-    </div>
-    <button class="sortbtn" id="sortBtn" title="順番の並び替え">
-      <span id="sortLabel">新しい順</span>
-      <svg id="sortIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-    </button>
   </div>
-
-  <!-- 一覧 -->
-  <table>
-    <thead>
-      <tr>
-        <th>順番</th>
-        <th>サムネ</th>
-        <th>日付</th>
-        <th>発信者</th>
-        <th>タイトル</th>
-        <th>資料URL</th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-  <div id="stateArea"></div>
-
-  <footer>
-    社内利用限定 — このページのURLは社外に共有しないでください。
-  </footer>
 </div>
 
+<div class="wrap">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchBox" placeholder="タイトル・担当者で絞り込み">
+    </div>
+    <button class="sortbtn" id="sortBtn">
+      <span id="sortLabel">新しい順</span>
+      <svg id="sortIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+    </button>
+    <div class="view-toggle">
+      <button id="viewGrid" class="active" title="グリッド表示" aria-label="グリッド表示">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </button>
+      <button id="viewList" title="リスト表示" aria-label="リスト表示">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Content area (grid or list) -->
+  <div id="viewContainer">
+    <div class="card-grid" id="cardGrid">
+      <div class="state"><div class="spinner"></div>読み込み中…</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  社内利用限定 — このページのURLは社外に共有しないでください。
+</footer>
+
+<!-- 既存行のサムネ設定/変更用(非表示) -->
+<input type="file" id="thumbEditInput" accept="image/*" style="display:none">
+
 <script>
-/* ============================================================
-   ★ここにGASの「ウェブアプリURL」を貼り付けてください★
-   （末尾が /exec のURLです）
-   ============================================================ */
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyQJXA5G0BsFJUBShcSFLHXAZ90OZfKLjb4L7rVLw8m0x-CRI1q1dAnRyVc_nAGqHting/exec';
 
 let allRows = [];
-let sortDir = 'desc'; // desc = 新しい順(順番の大きい方が上) / asc = 古い順
+let sortDir = 'desc';
+let viewMode = localStorage.getItem('viewMode') || 'grid';
 
 const $ = id => document.getElementById(id);
 
-// 順番(第N回)から数値を取り出す
 function orderNum(o){
   const m = (o||'').toString().match(/(\d+)/);
   return m ? parseInt(m[1],10) : 0;
 }
 
-// URLの種類からサービス名と色を判定（サムネ未指定時のアイコン用）
 function serviceOf(url){
   const u = (url||'').toLowerCase();
   if(u.includes('xd.adobe'))      return {name:'XD',    color:'#470137'};
@@ -303,38 +568,117 @@ function serviceOf(url){
   if(u.includes('dropbox'))       return {name:'DBOX',  color:'#0061fe'};
   if(u.includes('figma'))         return {name:'FIGMA', color:'#0d99ff'};
   if(u.includes('notion'))        return {name:'NOTION',color:'#37352f'};
-  if(u.endsWith('.pdf'))          return {name:'PDF',   color:'#c8410f'};
-  return {name:'WEB', color:'#8a8475'};
+  if(u.endsWith('.pdf'))          return {name:'PDF',   color:'#e84f2a'};
+  return {name:'WEB', color:'#555555'};
 }
 
-function thumbCell(row){
-  if(row.thumb){
-    return '<img class="thumb" src="'+row.thumb+'" alt="" loading="lazy" '+
-           'onerror="this.outerHTML=this.dataset.fb" data-fb=\''+iconHTML(row.url)+'\'>';
-  }
-  return iconHTML(row.url);
-}
-function iconHTML(url){
+function iconHTMLDiv(url){
   const s = serviceOf(url);
-  return '<div class="thumb-icon" style="background:'+s.color+'">'+s.name+'</div>';
+  return `<div class="card-thumb-icon" style="background:${s.color}">${s.name}</div>`;
+}
+
+function iconHTMLLv(url){
+  const s = serviceOf(url);
+  return `<div class="lv-thumb-icon" style="background:${s.color}">${s.name}</div>`;
+}
+
+// onerror はインライン HTML を避け、関数参照で置換する
+function _thumbFallbackCard(el, url){
+  const s = serviceOf(url);
+  const div = document.createElement('div');
+  div.className = 'card-thumb-icon';
+  div.style.background = s.color;
+  div.textContent = s.name;
+  el.replaceWith(div);
+}
+
+function _thumbFallbackList(el, url){
+  const s = serviceOf(url);
+  const div = document.createElement('div');
+  div.className = 'lv-thumb-icon';
+  div.style.background = s.color;
+  div.textContent = s.name;
+  el.replaceWith(div);
+}
+
+function cardThumbHTML(row){
+  if(row.thumb){
+    return `<img src="${escAttr(row.thumb)}" alt="" loading="lazy"
+      onerror="_thumbFallbackCard(this,'${escAttr(row.url)}')">`;
+  }
+  return iconHTMLDiv(row.url);
+}
+
+function listThumbHTML(row){
+  if(row.thumb){
+    return `<img class="lv-thumb-img" src="${escAttr(row.thumb)}" alt="" loading="lazy"
+      onerror="_thumbFallbackList(this,'${escAttr(row.url)}')">`;
+  }
+  return iconHTMLLv(row.url);
 }
 
 function shortUrl(url){
-  try{ const h = new URL(url).hostname.replace('www.',''); return h; }
+  try{ return new URL(url).hostname.replace('www.',''); }
   catch(e){ return 'リンク'; }
 }
 
+const EXTERNAL_ICON = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+
+function renderGrid(rows){
+  return `<div class="card-grid">${rows.map(r=>`
+    <div class="card">
+      <div class="card-thumb">
+        ${cardThumbHTML(r)}
+        <span class="card-order">${esc(r.order)}</span>
+        <button class="thumb-edit thumb-edit-card" title="サムネを設定/変更" onclick="editThumb('${escAttr(r.order)}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${esc(r.title)}</div>
+        <div class="card-meta">
+          <span class="chip">${esc(r.author)}</span>
+          <span class="card-date">${esc(r.date)}</span>
+        </div>
+        <div class="card-url">
+          <a href="${escAttr(r.url)}" target="_blank" rel="noopener">
+            ${EXTERNAL_ICON} ${esc(shortUrl(r.url))}
+          </a>
+        </div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function renderList(rows){
+  return `<table class="list-view">
+    <thead><tr>
+      <th>順番</th><th>サムネ</th><th>タイトル</th>
+      <th>発信者</th><th>日付</th><th>URL</th>
+    </tr></thead>
+    <tbody>${rows.map(r=>`
+      <tr>
+        <td class="lv-order">${esc(r.order)}</td>
+        <td class="lv-thumb"><div class="lv-thumb-wrap">${listThumbHTML(r)}<button class="thumb-edit thumb-edit-list" title="サムネを設定/変更" onclick="editThumb('${escAttr(r.order)}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div></td>
+        <td class="lv-title">${esc(r.title)}</td>
+        <td class="lv-author lv-author-cell"><span class="chip">${esc(r.author)}</span></td>
+        <td class="lv-date">${esc(r.date)}</td>
+        <td class="lv-url">
+          <a href="${escAttr(r.url)}" target="_blank" rel="noopener">
+            ${EXTERNAL_ICON} ${esc(shortUrl(r.url))}
+          </a>
+        </td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
 function render(rows){
-  const tb = $('tbody');
-  tb.innerHTML = rows.map(r=>`
-    <tr>
-      <td class="c-order">${esc(r.order)}</td>
-      <td class="c-thumb">${thumbCell(r)}</td>
-      <td class="c-date">${esc(r.date)}</td>
-      <td class="c-author"><span class="chip">${esc(r.author)}</span></td>
-      <td class="c-title">${esc(r.title)}</td>
-      <td class="c-url"><a href="${escAttr(r.url)}" target="_blank" rel="noopener">${esc(shortUrl(r.url))} ↗</a></td>
-    </tr>`).join('');
+  const container = $('viewContainer');
+  if(!rows.length){
+    container.innerHTML = '<div class="card-grid"><div class="state">該当する資料がありません。</div></div>';
+    return;
+  }
+  container.innerHTML = viewMode === 'list' ? renderList(rows) : renderGrid(rows);
 }
 
 function esc(s){return (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
@@ -344,35 +688,29 @@ function applyFilter(){
   const q = $('searchBox').value.trim().toLowerCase();
   let rows = !q ? allRows.slice() : allRows.filter(r=>
     (r.title+r.author).toLowerCase().includes(q));
-  // 順番で並び替え
   rows.sort((a,b)=> sortDir==='asc'
     ? orderNum(a.order)-orderNum(b.order)
     : orderNum(b.order)-orderNum(a.order));
   render(rows);
-  $('stateArea').innerHTML = rows.length ? '' :
-    '<div class="state">該当する資料がありません。</div>';
 }
 
 async function load(){
-  $('stateArea').innerHTML = '<div class="state"><div class="spinner"></div>読み込み中…</div>';
+  $('viewContainer').innerHTML = '<div class="card-grid"><div class="state"><div class="spinner"></div>読み込み中…</div></div>';
   try{
     const res = await fetch(GAS_URL);
     const data = await res.json();
     if(!data.ok) throw new Error(data.error||'読み込みに失敗しました');
-    allRows = data.rows; // 並び順はapplyFilterで制御
+    allRows = data.rows;
     $('totalCount').textContent = allRows.length;
-    $('stateArea').innerHTML = '';
     buildAuthorOptions();
     applyFilter();
   }catch(err){
-    $('stateArea').innerHTML = '<div class="state">読み込みに失敗しました。GAS_URL の設定を確認してください。<br>'+esc(err.message)+'</div>';
+    $('viewContainer').innerHTML = `<div class="card-grid"><div class="state">読み込みに失敗しました。GAS_URL の設定を確認してください。<br>${esc(err.message)}</div></div>`;
   }
 }
 
-// 登録済みデータから発信者名を集めてプルダウンを生成
 function buildAuthorOptions(){
   const sel = $('f-author-select');
-  // 既存のoptionをクリア(先頭の案内と末尾の「その他」だけ残して再構築)
   const names = [...new Set(allRows.map(r=>(r.author||'').trim()).filter(Boolean))]
     .sort((a,b)=>a.localeCompare(b,'ja'));
   sel.innerHTML = '<option value="">選択してください</option>'
@@ -380,19 +718,15 @@ function buildAuthorOptions(){
     + '<option value="__other__">＋ その他（直接入力）</option>';
 }
 
-// 「その他」を選んだら直接入力欄を出す
 $('f-author-select').addEventListener('change', e=>{
   const other = $('f-author-other');
   if(e.target.value === '__other__'){
-    other.style.display = 'block';
-    other.focus();
+    other.style.display = 'block'; other.focus();
   }else{
-    other.style.display = 'none';
-    other.value = '';
+    other.style.display = 'none'; other.value = '';
   }
 });
 
-// ファイル選択ラベル更新
 $('f-thumb').addEventListener('change', e=>{
   const f = e.target.files[0];
   $('fileLabel').textContent = f ? f.name : '画像を選択';
@@ -405,6 +739,54 @@ function fileToBase64(file){
     r.onerror = rej;
     r.readAsDataURL(file);
   });
+}
+
+// 既存行のサムネを設定/変更:鉛筆ボタンから呼ばれる
+let editTargetOrder = null;
+function editThumb(order){
+  editTargetOrder = order;
+  $('thumbEditInput').value = '';
+  $('thumbEditInput').click();
+}
+
+async function onThumbFilePicked(e){
+  const file = e.target.files[0];
+  const order = editTargetOrder;
+  if(!file || !order) return;
+  if(file.size > 4*1024*1024){ alert('画像は4MB以下にしてください。'); return; }
+
+  // 対象のサムネ枠にローディング表示(カード/リスト両対応)
+  let busyEl = null;
+  const orderEls = [...document.querySelectorAll('.card-order, .lv-order')];
+  const hit = orderEls.find(el => el.textContent.trim() === order);
+  if(hit){
+    busyEl = hit.closest('.card-thumb') || hit.closest('tr')?.querySelector('.lv-thumb-wrap');
+    if(busyEl) busyEl.classList.add('thumb-busy');
+  }
+
+  try{
+    const payload = {
+      action: 'updateThumb',
+      order: order,
+      thumbBase64: await fileToBase64(file),
+      thumbName: file.name
+    };
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'サムネの更新に失敗しました');
+    const target = allRows.find(r => (r.order||'').toString().trim() === order);
+    if(target) target.thumb = data.thumb;
+    applyFilter();
+  }catch(err){
+    if(busyEl) busyEl.classList.remove('thumb-busy');
+    alert('エラー: ' + err.message);
+  }finally{
+    editTargetOrder = null;
+  }
 }
 
 async function submit(){
@@ -421,7 +803,7 @@ async function submit(){
   }
 
   const btn = $('submitBtn');
-  btn.disabled = true; btn.textContent='送信中…';
+  btn.disabled=true; btn.textContent='送信中…';
   msg.className='msg'; msg.textContent='';
 
   try{
@@ -431,7 +813,6 @@ async function submit(){
       payload.thumbBase64 = await fileToBase64(file);
       payload.thumbName = file.name;
     }
-    // GASはCORSプリフライトを避けるため text/plain で送る
     const res = await fetch(GAS_URL, {
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
@@ -440,7 +821,6 @@ async function submit(){
     const data = await res.json();
     if(!data.ok) throw new Error(data.error||'追加に失敗しました');
 
-    // フォームをクリア
     $('f-author-select').value=''; $('f-author-other').value=''; $('f-author-other').style.display='none';
     $('f-title').value=''; $('f-url').value='';
     $('f-thumb').value=''; $('fileLabel').textContent='画像を選択';
@@ -455,14 +835,27 @@ async function submit(){
 
 $('submitBtn').addEventListener('click', submit);
 $('searchBox').addEventListener('input', applyFilter);
-
-// 並び替えボタン
+$('thumbEditInput').addEventListener('change', onThumbFilePicked);
 $('sortBtn').addEventListener('click', ()=>{
-  sortDir = (sortDir === 'desc') ? 'asc' : 'desc';
-  $('sortLabel').textContent = (sortDir === 'desc') ? '新しい順' : '古い順';
-  $('sortIcon').style.transform = (sortDir === 'desc') ? 'rotate(0deg)' : 'rotate(180deg)';
+  sortDir = (sortDir==='desc') ? 'asc' : 'desc';
+  $('sortLabel').textContent = (sortDir==='desc') ? '新しい順' : '古い順';
+  $('sortIcon').style.transform = (sortDir==='desc') ? '' : 'rotate(180deg)';
   applyFilter();
 });
+
+function setView(mode){
+  viewMode = mode;
+  localStorage.setItem('viewMode', mode);
+  $('viewGrid').classList.toggle('active', mode === 'grid');
+  $('viewList').classList.toggle('active', mode === 'list');
+  applyFilter();
+}
+
+$('viewGrid').addEventListener('click', ()=> setView('grid'));
+$('viewList').addEventListener('click', ()=> setView('list'));
+
+// 初期状態をlocalStorageから復元
+setView(viewMode);
 load();
 </script>
 </body>
