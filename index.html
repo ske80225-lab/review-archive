@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>レビュー会アーカイブ</title>
+<style>
+  /* ============================================================
+     設定：ここにGASのウェブアプリURLを貼り付けてください
+     ============================================================ */
+  /* （URLはHTML下部の <script> 内 GAS_URL に記入します） */
+
+  :root{
+    --ink:#1b1a17;
+    --paper:#f3efe7;
+    --line:#d8d1c2;
+    --accent:#c8410f;     /* 朱：版下の校正色から */
+    --accent-soft:#f6e3d8;
+    --sub:#8a8475;
+    --chip:#e9e2d4;
+    --ok:#2f7d54;
+    --shadow:0 1px 0 rgba(27,26,23,.04);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ---- ヘッダー ---- */
+  header.masthead{
+    border-bottom:2px solid var(--ink);
+    padding:40px 0 22px;
+    margin-bottom:0;
+  }
+  .masthead .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .brand{display:flex;flex-direction:column;gap:6px}
+  .eyebrow{
+    font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;
+  }
+  h1{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:34px;font-weight:600;margin:0;letter-spacing:.04em;
+  }
+  .count{
+    font-family:"Hiragino Mincho ProN",serif;
+    text-align:right;line-height:1.1;
+  }
+  .count b{display:block;font-size:40px;color:var(--accent)}
+  .count span{font-size:11px;letter-spacing:.2em;color:var(--sub)}
+
+  /* ---- 投稿フォーム ---- */
+  .composer{
+    border-bottom:1px solid var(--line);
+    padding:22px 0 26px;
+  }
+  .composer-head{
+    display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  }
+  .composer-head .no{
+    font-family:"Hiragino Mincho ProN",serif;color:var(--accent);
+    font-size:13px;font-weight:700;letter-spacing:.1em;
+  }
+  .composer-head h2{font-size:15px;margin:0;font-weight:700;letter-spacing:.04em}
+  .grid{
+    display:grid;
+    grid-template-columns:160px 1fr 1fr;
+    gap:12px;
+  }
+  .field label{
+    display:block;font-size:11px;letter-spacing:.12em;color:var(--sub);
+    margin-bottom:5px;font-weight:700;
+  }
+  .field input[type=text],.field input[type=url],.field select{
+    width:100%;padding:10px 12px;border:1px solid var(--line);
+    background:#fffdf8;border-radius:2px;font-size:14px;color:var(--ink);
+    font-family:inherit;transition:border-color .15s;
+  }
+  .field select{
+    appearance:none;-webkit-appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8475' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;
+  }
+  .field input:focus,.field select:focus{outline:none;border-color:var(--accent)}
+  .row2{display:flex;align-items:flex-end;gap:14px;margin-top:12px;flex-wrap:wrap}
+  .thumb-field{flex:1;min-width:220px}
+  .filebtn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 14px;border:1px dashed var(--line);border-radius:2px;
+    background:#fffdf8;cursor:pointer;font-size:13px;color:var(--sub);
+    transition:.15s;
+  }
+  .filebtn:hover{border-color:var(--accent);color:var(--accent)}
+  .filebtn input{display:none}
+  .filehint{font-size:11px;color:var(--sub);margin-top:5px}
+  .submit{
+    padding:11px 28px;background:var(--ink);color:var(--paper);
+    border:none;border-radius:2px;font-size:14px;font-weight:700;
+    letter-spacing:.08em;cursor:pointer;font-family:inherit;transition:.15s;
+  }
+  .submit:hover{background:var(--accent)}
+  .submit:disabled{opacity:.5;cursor:not-allowed}
+  .msg{font-size:13px;margin-top:10px;min-height:18px}
+  .msg.ok{color:var(--ok)}
+  .msg.err{color:var(--accent)}
+
+  /* ---- テーブル ---- */
+  .toolbar{
+    display:flex;align-items:center;gap:14px;
+    padding:18px 0 12px;flex-wrap:wrap;
+  }
+  .search{
+    flex:1;min-width:200px;display:flex;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:2px;padding:8px 12px;background:#fffdf8;
+  }
+  .search input{border:none;outline:none;background:none;font-size:14px;width:100%;font-family:inherit;color:var(--ink)}
+  .search svg{flex:none;opacity:.5}
+  .sortbtn{
+    flex:none;display:inline-flex;align-items:center;gap:7px;
+    border:1px solid var(--line);border-radius:2px;padding:9px 14px;background:#fffdf8;
+    font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;font-family:inherit;
+    letter-spacing:.04em;transition:.15s;white-space:nowrap;
+  }
+  .sortbtn:hover{border-color:var(--accent);color:var(--accent)}
+  .sortbtn svg{opacity:.6;transition:transform .2s}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  thead th{
+    text-align:left;font-size:11px;letter-spacing:.14em;color:var(--sub);
+    font-weight:700;padding:10px 12px;border-bottom:2px solid var(--ink);
+    text-transform:uppercase;
+  }
+  tbody td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr:hover{background:rgba(200,65,15,.035)}
+  .c-order{font-family:"Hiragino Mincho ProN",serif;color:var(--accent);font-weight:700;white-space:nowrap;width:64px}
+  .c-date{color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums;width:120px}
+  .c-thumb{width:72px}
+  .thumb{
+    width:56px;height:42px;object-fit:cover;border:1px solid var(--line);
+    border-radius:2px;background:#fff;display:block;
+  }
+  .thumb-icon{
+    width:56px;height:42px;border:1px solid var(--line);border-radius:2px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:800;letter-spacing:.04em;color:#fff;
+  }
+  .chip{
+    display:inline-block;padding:3px 10px;background:var(--chip);
+    border-radius:2px;font-size:13px;white-space:nowrap;
+  }
+  .c-title{font-weight:600}
+  .c-url a{
+    color:var(--accent);text-decoration:none;font-size:13px;
+    border-bottom:1px solid transparent;transition:.15s;
+  }
+  .c-url a:hover{border-bottom-color:var(--accent)}
+
+  .state{text-align:center;padding:60px 0;color:var(--sub);font-size:14px}
+  .spinner{
+    width:22px;height:22px;border:2px solid var(--line);border-top-color:var(--accent);
+    border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  footer{padding:40px 0 60px;color:var(--sub);font-size:12px;text-align:center}
+
+  /* レスポンシブ */
+  @media(max-width:720px){
+    .grid{grid-template-columns:1fr}
+    h1{font-size:26px}
+    .count b{font-size:30px}
+    thead{display:none}
+    tbody tr{display:grid;grid-template-columns:56px 1fr;gap:4px 12px;padding:14px 0;border-bottom:1px solid var(--line)}
+    tbody td{border:none;padding:2px 0}
+    .c-thumb{grid-row:span 4}
+    .c-date::before{content:"日付：";color:var(--sub)}
+    .c-author::before{content:"発信者：";color:var(--sub)}
+  }
+  @media(prefers-reduced-motion:reduce){.spinner{animation:none}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand">
+      <span class="eyebrow">Review Meeting Archive</span>
+      <h1>レビュー会アーカイブ</h1>
+    </div>
+    <div class="count">
+      <b id="totalCount">—</b>
+      <span>ENTRIES</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 投稿フォーム -->
+  <section class="composer">
+    <div class="composer-head">
+      <span class="no">＋</span>
+      <h2>資料を追加する</h2>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label>発信者（担当者名）</label>
+        <select id="f-author-select">
+          <option value="">選択してください</option>
+          <!-- 登録済みの発信者を自動で追加 -->
+          <option value="__other__">＋ その他（直接入力）</option>
+        </select>
+        <input type="text" id="f-author-other" placeholder="新しい発信者名を入力" maxlength="20" style="display:none;margin-top:8px">
+      </div>
+      <div class="field">
+        <label>タイトル</label>
+        <input type="text" id="f-title" placeholder="例：案件管理の効率化について" maxlength="120">
+      </div>
+      <div class="field">
+        <label>資料URL</label>
+        <input type="url" id="f-url" placeholder="https://...">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="thumb-field">
+        <label style="display:block;font-size:11px;letter-spacing:.12em;color:var(--sub);margin-bottom:5px;font-weight:700">サムネ画像（任意）</label>
+        <label class="filebtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span id="fileLabel">画像を選択</span>
+          <input type="file" id="f-thumb" accept="image/*">
+        </label>
+        <div class="filehint">1ページ目のスクショ等。未指定ならURLの種類アイコンを自動表示します。</div>
+      </div>
+      <button class="submit" id="submitBtn">追加する</button>
+    </div>
+    <div class="msg" id="formMsg"></div>
+  </section>
+
+  <!-- 検索 -->
+  <div class="toolbar">
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchBox" placeholder="タイトル・担当者で絞り込み">
+    </div>
+    <button class="sortbtn" id="sortBtn" title="順番の並び替え">
+      <span id="sortLabel">新しい順</span>
+      <svg id="sortIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+    </button>
+  </div>
+
+  <!-- 一覧 -->
+  <table>
+    <thead>
+      <tr>
+        <th>順番</th>
+        <th>サムネ</th>
+        <th>日付</th>
+        <th>発信者</th>
+        <th>タイトル</th>
+        <th>資料URL</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="stateArea"></div>
+
+  <footer>
+    社内利用限定 — このページのURLは社外に共有しないでください。
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   ★ここにGASの「ウェブアプリURL」を貼り付けてください★
+   （末尾が /exec のURLです）
+   ============================================================ */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyQJXA5G0BsFJUBShcSFLHXAZ90OZfKLjb4L7rVLw8m0x-CRI1q1dAnRyVc_nAGqHting/exec';
+
+let allRows = [];
+let sortDir = 'desc'; // desc = 新しい順(順番の大きい方が上) / asc = 古い順
+
+const $ = id => document.getElementById(id);
+
+// 順番(第N回)から数値を取り出す
+function orderNum(o){
+  const m = (o||'').toString().match(/(\d+)/);
+  return m ? parseInt(m[1],10) : 0;
+}
+
+// URLの種類からサービス名と色を判定（サムネ未指定時のアイコン用）
+function serviceOf(url){
+  const u = (url||'').toLowerCase();
+  if(u.includes('xd.adobe'))      return {name:'XD',    color:'#470137'};
+  if(u.includes('docs.google'))   return {name:'DOCS',  color:'#1a73e8'};
+  if(u.includes('drive.google'))  return {name:'DRIVE', color:'#188038'};
+  if(u.includes('dropbox'))       return {name:'DBOX',  color:'#0061fe'};
+  if(u.includes('figma'))         return {name:'FIGMA', color:'#0d99ff'};
+  if(u.includes('notion'))        return {name:'NOTION',color:'#37352f'};
+  if(u.endsWith('.pdf'))          return {name:'PDF',   color:'#c8410f'};
+  return {name:'WEB', color:'#8a8475'};
+}
+
+function thumbCell(row){
+  if(row.thumb){
+    return '<img class="thumb" src="'+row.thumb+'" alt="" loading="lazy" '+
+           'onerror="this.outerHTML=this.dataset.fb" data-fb=\''+iconHTML(row.url)+'\'>';
+  }
+  return iconHTML(row.url);
+}
+function iconHTML(url){
+  const s = serviceOf(url);
+  return '<div class="thumb-icon" style="background:'+s.color+'">'+s.name+'</div>';
+}
+
+function shortUrl(url){
+  try{ const h = new URL(url).hostname.replace('www.',''); return h; }
+  catch(e){ return 'リンク'; }
+}
+
+function render(rows){
+  const tb = $('tbody');
+  tb.innerHTML = rows.map(r=>`
+    <tr>
+      <td class="c-order">${esc(r.order)}</td>
+      <td class="c-thumb">${thumbCell(r)}</td>
+      <td class="c-date">${esc(r.date)}</td>
+      <td class="c-author"><span class="chip">${esc(r.author)}</span></td>
+      <td class="c-title">${esc(r.title)}</td>
+      <td class="c-url"><a href="${escAttr(r.url)}" target="_blank" rel="noopener">${esc(shortUrl(r.url))} ↗</a></td>
+    </tr>`).join('');
+}
+
+function esc(s){return (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function escAttr(s){return esc(s).replace(/"/g,'&quot;');}
+
+function applyFilter(){
+  const q = $('searchBox').value.trim().toLowerCase();
+  let rows = !q ? allRows.slice() : allRows.filter(r=>
+    (r.title+r.author).toLowerCase().includes(q));
+  // 順番で並び替え
+  rows.sort((a,b)=> sortDir==='asc'
+    ? orderNum(a.order)-orderNum(b.order)
+    : orderNum(b.order)-orderNum(a.order));
+  render(rows);
+  $('stateArea').innerHTML = rows.length ? '' :
+    '<div class="state">該当する資料がありません。</div>';
+}
+
+async function load(){
+  $('stateArea').innerHTML = '<div class="state"><div class="spinner"></div>読み込み中…</div>';
+  try{
+    const res = await fetch(GAS_URL);
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error||'読み込みに失敗しました');
+    allRows = data.rows; // 並び順はapplyFilterで制御
+    $('totalCount').textContent = allRows.length;
+    $('stateArea').innerHTML = '';
+    buildAuthorOptions();
+    applyFilter();
+  }catch(err){
+    $('stateArea').innerHTML = '<div class="state">読み込みに失敗しました。GAS_URL の設定を確認してください。<br>'+esc(err.message)+'</div>';
+  }
+}
+
+// 登録済みデータから発信者名を集めてプルダウンを生成
+function buildAuthorOptions(){
+  const sel = $('f-author-select');
+  // 既存のoptionをクリア(先頭の案内と末尾の「その他」だけ残して再構築)
+  const names = [...new Set(allRows.map(r=>(r.author||'').trim()).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b,'ja'));
+  sel.innerHTML = '<option value="">選択してください</option>'
+    + names.map(n=>`<option value="${escAttr(n)}">${esc(n)}</option>`).join('')
+    + '<option value="__other__">＋ その他（直接入力）</option>';
+}
+
+// 「その他」を選んだら直接入力欄を出す
+$('f-author-select').addEventListener('change', e=>{
+  const other = $('f-author-other');
+  if(e.target.value === '__other__'){
+    other.style.display = 'block';
+    other.focus();
+  }else{
+    other.style.display = 'none';
+    other.value = '';
+  }
+});
+
+// ファイル選択ラベル更新
+$('f-thumb').addEventListener('change', e=>{
+  const f = e.target.files[0];
+  $('fileLabel').textContent = f ? f.name : '画像を選択';
+});
+
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function submit(){
+  const sel = $('f-author-select').value;
+  const author = (sel === '__other__' ? $('f-author-other').value : sel).trim();
+  const title  = $('f-title').value.trim();
+  const url    = $('f-url').value.trim();
+  const file   = $('f-thumb').files[0];
+  const msg = $('formMsg');
+
+  if(!author||!title||!url){
+    msg.className='msg err'; msg.textContent='発信者・タイトル・URLをすべて入力してください。';
+    return;
+  }
+
+  const btn = $('submitBtn');
+  btn.disabled = true; btn.textContent='送信中…';
+  msg.className='msg'; msg.textContent='';
+
+  try{
+    const payload = { author, title, url };
+    if(file){
+      if(file.size > 4*1024*1024) throw new Error('画像は4MB以下にしてください。');
+      payload.thumbBase64 = await fileToBase64(file);
+      payload.thumbName = file.name;
+    }
+    // GASはCORSプリフライトを避けるため text/plain で送る
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error||'追加に失敗しました');
+
+    // フォームをクリア
+    $('f-author-select').value=''; $('f-author-other').value=''; $('f-author-other').style.display='none';
+    $('f-title').value=''; $('f-url').value='';
+    $('f-thumb').value=''; $('fileLabel').textContent='画像を選択';
+    msg.className='msg ok'; msg.textContent='「'+data.row.order+'」として追加しました。';
+    await load();
+  }catch(err){
+    msg.className='msg err'; msg.textContent=err.message;
+  }finally{
+    btn.disabled=false; btn.textContent='追加する';
+  }
+}
+
+$('submitBtn').addEventListener('click', submit);
+$('searchBox').addEventListener('input', applyFilter);
+
+// 並び替えボタン
+$('sortBtn').addEventListener('click', ()=>{
+  sortDir = (sortDir === 'desc') ? 'asc' : 'desc';
+  $('sortLabel').textContent = (sortDir === 'desc') ? '新しい順' : '古い順';
+  $('sortIcon').style.transform = (sortDir === 'desc') ? 'rotate(0deg)' : 'rotate(180deg)';
+  applyFilter();
+});
+load();
+</script>
+</body>
+</html>
